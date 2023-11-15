@@ -5,6 +5,7 @@ import numpy as np
 from skimage.draw import line
 from collections import Counter
 import math
+import cv2
 
 threshold=7
 learning_frames=25
@@ -160,8 +161,7 @@ def findRegions(heights):
     
     return trace
 
-def vel(x,y):
-    fps= 5
+def vel(x,y,fps):
     dx = x[-2] - x[-1]
     dy = y[-2] - y[-1]
     d= math.sqrt(dx**2 + dy**2)
@@ -169,7 +169,7 @@ def vel(x,y):
     return velocity 
 
     
-def orthogonal(array,t, univ):
+def orthogonal(array,t, univ,fps):
 
     if 0<= t <=learning_frames:
         angmax=0
@@ -240,15 +240,23 @@ def orthogonal(array,t, univ):
             
             #calculate velocity of closest wave after wave detection
             if t == (len(curort)-1):
-                velocity=vel(x,y)
-                print(f"Velocity: {velocity:.2f}")
-
+                velocity=vel(x,y,fps)
+                print(velocity)
 
     draw_line(array, angmax, 128, 128, True)
 
     return angmax
 
+# Obtain fps with opencv
+input_source = 'C:/Users/jimen/OneDrive/Escritorio/AAU Classes/python/Project/wave_bc.gif'
+cap = cv2.VideoCapture(input_source)
+if not cap.isOpened():
+    print("Error: Could not open video/camera.")
+    exit()
+fps = cap.get(cv2.CAP_PROP_FPS)
+cap.release()
 
+#wave detection
 for t in range(ds.dims['count']):
     print(t)
     plt.gca().clear()
@@ -271,7 +279,7 @@ for t in range(ds.dims['count']):
             elif array[i][j] > 300: 
                 array[i][j] = maxi
             
-    univ=orthogonal(array,t, univ)
+    univ=orthogonal(array,t, univ,fps)
 
     plt.imshow(da)
     plt.savefig(f'C:/Users/jimen/OneDrive/Escritorio/AAU Classes/python/Project/Frames/frame_{t}.png')
