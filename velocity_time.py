@@ -193,8 +193,6 @@ def vel(x,y,n,t):
     #obtain distance that wave moved
     d = math.sqrt(sum((x**2 + y**2) for x, y in zip(dx, dy)))
     
-    #t= 0.1
-
     #divide by t for velocity
     velocity= d/t
     return velocity 
@@ -330,8 +328,7 @@ for t in range(ds.dims['count']):
         st = time.time()
 
         #after detecting waves for 2+ frames, calculate velocity
-        # tr == 1 to asure only velocity is calculated when a wave is detected
-        if k > 2 and tr == 1: 
+        if k > 2: 
 
             vvx = vvx[nwaves:]
             vvy = vvy[nwaves:]
