@@ -160,6 +160,15 @@ def findRegions(heights):
     
     return trace
 
+def cleanvel(x,y):
+    #find value that is out of range in comparison with others
+    maxdifx = max(range(len(x) - 1), key=lambda i: x[i + 1] - x[i])
+    maxdify = max(range(len(y) - 1), key=lambda i: y[i + 1] - y[i])
+    #eliminate value that is out of range
+    x.pop(maxdifx)
+    y.pop(maxdify)
+    return x,y
+
 def vel(x,y,n):
 
     x1 = x[:n] #previous coordinatesc of x
@@ -172,25 +181,20 @@ def vel(x,y,n):
         dx = [a - b for a, b in zip(x1, x2)]
         dy = [a - b for a, b in zip(y1, y2)]
     elif len(x1) > len(x2):
-        x1.pop(0)
-        y1.pop(0)
+        x1,y1 = cleanvel(x1,y1)
         dx = [a - b for a, b in zip(x1, x2)]
         dy = [a - b for a, b in zip(y1, y2)]
     elif len(x2) > len(x1):
-        x2.pop(0)
-        y2.pop(0)
+        x2,y2 = cleanvel(x2,y2)
         dx = [a - b for a, b in zip(x1, x2)]
         dy = [a - b for a, b in zip(y1, y2)]
     
     #obtain distance that wave moved
-    d=[]
-    for i in range(len(dx)):
-        di= math.sqrt(dx[i]**2 + dy[i]**2)
-        d.append(di)
+    d = math.sqrt(sum((x**2 + y**2) for x, y in zip(dx, dy)))
     
     #divide by t for velocity
     t = 0.1 #assuming time between frames is 0.1 s
-    velocity= [x / t for x in d]
+    velocity= d/t
     return velocity 
 
     
@@ -280,6 +284,7 @@ def orthogonal(array,t, univ,xg,yg):
 
 vvx=[]
 vvy=[]
+velocity=[]
 k=0
 nwaves=0
 
@@ -318,15 +323,17 @@ for t in range(ds.dims['count']):
     #k checks during how many frames waves have been detected
     k += tr 
 
-    if k > 2: #after detecting waves for 2+ frames, calculate velocity
+    #after detecting waves for 2+ frames, calculate velocity
+    # tr == 1 to asure only velocity is calculated when a wave is detected
+    if k > 2 and tr == 1: 
         vvx = vvx[nwaves:]
         vvy = vvy[nwaves:]
-        velocity = vel(vvx,vvy,nwave)
-
-        for i,v in enumerate(velocity, 1):
-            print(f"Velocity of wave {i} = {v}")
+        velo = vel(vvx,vvy,nwave)
+        velocity.append(velo)
     
     nwaves=nwave
+    print(velocity)
+    
 
     plt.imshow(da)
     plt.savefig(f'C:/Users/jimen/OneDrive/Escritorio/AAU Classes/python/Project/Frames/frame_{t}.png')
