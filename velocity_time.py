@@ -5,7 +5,7 @@ import numpy as np
 from skimage.draw import line
 from collections import Counter
 import math
-import time
+from time import process_time
 
 threshold=7
 learning_frames=25
@@ -192,7 +192,6 @@ def vel(x,y,n,t):
     
     #obtain distance that wave moved
     d = math.sqrt(sum((x**2 + y**2) for x, y in zip(dx, dy)))
-
     #divide by t for velocity
     velocity= d/t
     return velocity 
@@ -323,8 +322,7 @@ for t in range(ds.dims['count']):
 
     if tr == 1:
         #if a wave is detected start counting time
-        st = time.time()
-
+        st = process_time()
         #after detecting waves for 2+ frames, calculate velocity
         if k > 2: 
 
