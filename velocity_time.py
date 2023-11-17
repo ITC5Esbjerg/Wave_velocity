@@ -192,12 +192,11 @@ def vel(x,y,n,t):
     
     #obtain distance that wave moved
     d = math.sqrt(sum((x**2 + y**2) for x, y in zip(dx, dy)))
-    
+
     #divide by t for velocity
     velocity= d/t
     return velocity 
 
-    
 def orthogonal(array,t, univ,xg,yg):
     ivel=0
     tr=0
@@ -279,7 +278,6 @@ def orthogonal(array,t, univ,xg,yg):
     #yg = coordinates of y
     #ivel = number of waves detected
     #tr= 1 if a wave is detected / 0 if otherwise
-
     return angmax,xg,yg, ivel, tr
 
 vvx=[]
@@ -336,8 +334,10 @@ for t in range(ds.dims['count']):
             print('Current velocity: ', velo)
             velocity.append(velo)
 
-    #if no wave is detected velocity vector restarts
+    #if no wave is detected velocity parameters restart
     elif tr == 0:
+        k = 0
+        velocity.append('nan')
         vvx = []
         vvy = []
         print('No waves detected')
@@ -346,6 +346,9 @@ for t in range(ds.dims['count']):
 
     plt.imshow(da)
     plt.savefig(f'C:/Users/jimen/OneDrive/Escritorio/AAU Classes/python/Project/Frames/frame_{t}.png')
+
+#velocity historial
+print(velocity)
 
 with imageio.get_writer('waveline10.gif', mode='I', loop=0) as writer:
     for i in range(len(ds.time)):
