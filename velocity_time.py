@@ -5,6 +5,7 @@ import numpy as np
 from skimage.draw import line
 from collections import Counter
 import math
+import time
 
 threshold=7
 learning_frames=25
@@ -169,7 +170,7 @@ def cleanvel(x,y):
     y.pop(maxdify)
     return x,y
 
-def vel(x,y,n):
+def vel(x,y,n,t):
 
     x1 = x[:n] #previous coordinatesc of x
     x2 = x[n:] #actual coordinates of x
@@ -192,8 +193,9 @@ def vel(x,y,n):
     #obtain distance that wave moved
     d = math.sqrt(sum((x**2 + y**2) for x, y in zip(dx, dy)))
     
+    #t= 0.1
+
     #divide by t for velocity
-    t = 0.1 #assuming time between frames is 0.1 s
     velocity= d/t
     return velocity 
 
@@ -314,7 +316,7 @@ for t in range(ds.dims['count']):
     yg=[]
 
     #nwave is the number of waves detected, 
-    univ,vx,vy,nwave,tr=orthogonal(array,t, univ,xg,yg,)
+    univ,vx,vy,nwave,tr=orthogonal(array,t, univ,xg,yg)
     
     #vvx is a list with all x coordinates, 
     #vvy is list with al y coordinates
@@ -323,21 +325,30 @@ for t in range(ds.dims['count']):
     #k checks during how many frames waves have been detected
     k += tr 
 
-    #after detecting waves for 2+ frames, calculate velocity
-    # tr == 1 to asure only velocity is calculated when a wave is detected
-    if k > 2 and tr == 1: 
-        vvx = vvx[nwaves:]
-        vvy = vvy[nwaves:]
-        velo = vel(vvx,vvy,nwave)
-        velocity.append(velo)
+    if tr == 1:
+        #if a wave is detected start counting time
+        st = time.time()
+
+        #after detecting waves for 2+ frames, calculate velocity
+        # tr == 1 to asure only velocity is calculated when a wave is detected
+        if k > 2 and tr == 1: 
+
+            vvx = vvx[nwaves:]
+            vvy = vvy[nwaves:]
+            velo = vel(vvx,vvy,nwave,st)
+            print('Current velocity: ', velo)
+            velocity.append(velo)
+
+    #if no wave is detected velocity vector restarts
+    elif tr == 0:
+        vvx = []
+        vvy = []
+        print('No waves detected')
     
     nwaves=nwave
-    print(velocity)
-    
 
     plt.imshow(da)
     plt.savefig(f'C:/Users/jimen/OneDrive/Escritorio/AAU Classes/python/Project/Frames/frame_{t}.png')
-
 
 with imageio.get_writer('waveline10.gif', mode='I', loop=0) as writer:
     for i in range(len(ds.time)):
