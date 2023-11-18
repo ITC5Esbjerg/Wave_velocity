@@ -162,9 +162,9 @@ def findRegions(heights):
     return trace
 
 def vel(x,y,fps):
-    dx = x[-2] - x[-1]
-    dy = y[-2] - y[-1]
-    d= math.sqrt(dx**2 + dy**2)
+    dx = [x[i + 1] - x[i] for i in range(len(x) - 1)]
+    dy = [y[i + 1] - y[i] for i in range(len(y) - 1)]
+    d = math.sqrt(sum((x**2 + y**2) for x, y in zip(dx, dy)))
     velocity= fps*d
     return velocity 
 
@@ -231,6 +231,7 @@ def orthogonal(array,t, univ,fps):
                      
         x=[]
         y=[]
+        velocity=0
         for t in range(len(curort)):
 
             draw_line(array, (angmax-90), line_coords[0][curort[t]], line_coords[1][curort[t]], True) 
