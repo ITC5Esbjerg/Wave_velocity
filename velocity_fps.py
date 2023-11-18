@@ -168,8 +168,8 @@ def vel(x,y,fps):
     velocity= fps*d
     return velocity 
 
-    
 def orthogonal(array,t, univ,fps):
+    velocity = 0
 
     if 0<= t <=learning_frames:
         angmax=0
@@ -231,7 +231,6 @@ def orthogonal(array,t, univ,fps):
                      
         x=[]
         y=[]
-        velocity=0
         for t in range(len(curort)):
 
             draw_line(array, (angmax-90), line_coords[0][curort[t]], line_coords[1][curort[t]], True) 
@@ -239,18 +238,19 @@ def orthogonal(array,t, univ,fps):
             x.append(line_coords[0][curort[t]])
             y.append(line_coords[1][curort[t]])
             
-            #calculate velocity of closest wave after wave detection
+            #calculate velocity
             if t == (len(curort)-1):
                 velocity=vel(x,y,fps)
-                print(velocity)
 
     draw_line(array, angmax, 128, 128, True)
 
-    return angmax
+    return angmax, velocity
 
 frames = 0
 fps = 0
 start_time = time.time()
+veloci = 0
+velg = []
 
 #wave detection
 for t in range(ds.dims['count']):
@@ -277,7 +277,15 @@ for t in range(ds.dims['count']):
             elif array[i][j] > 300: 
                 array[i][j] = maxi
             
-    univ=orthogonal(array,t, univ,fps)
+    univ,velocity=orthogonal(array,t, univ,fps)
+    
+    if velocity == 0:
+        print('No waves detected')
+    else:
+        print('Current velocity:',velocity)
+
+    velg.append(velocity) #list with all velocities
+
     elapsed_time = time.time() - start_time
     if elapsed_time >= 1.0:
         fps = frames / elapsed_time
