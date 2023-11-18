@@ -249,10 +249,10 @@ def orthogonal(array,t, univ,fps):
 
 frames = 0
 fps = 0
+start_time = time.time()
 
 #wave detection
 for t in range(ds.dims['count']):
-    start_time = time.time()
     frames =+ 1
 
     print(t)
@@ -278,7 +278,6 @@ for t in range(ds.dims['count']):
             
     univ=orthogonal(array,t, univ,fps)
     elapsed_time = time.time() - start_time
-
     if elapsed_time >= 1.0:
         fps = frames / elapsed_time
         start_time = time.time()
