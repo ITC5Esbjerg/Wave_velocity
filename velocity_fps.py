@@ -5,7 +5,7 @@ import numpy as np
 from skimage.draw import line
 from collections import Counter
 import math
-import cv2
+import time
 
 threshold=7
 learning_frames=25
@@ -247,17 +247,14 @@ def orthogonal(array,t, univ,fps):
 
     return angmax
 
-# Obtain fps with opencv
-input_source = 'C:/Users/jimen/OneDrive/Escritorio/AAU Classes/python/Project/wave_bc.gif'
-cap = cv2.VideoCapture(input_source)
-if not cap.isOpened():
-    print("Error: Could not open video/camera.")
-    exit()
-fps = cap.get(cv2.CAP_PROP_FPS)
-cap.release()
+frames = 0
+fps = 0
 
 #wave detection
 for t in range(ds.dims['count']):
+    start_time = time.time()
+    frames =+ 1
+
     print(t)
     plt.gca().clear()
 
@@ -280,11 +277,14 @@ for t in range(ds.dims['count']):
                 array[i][j] = maxi
             
     univ=orthogonal(array,t, univ,fps)
+    elapsed_time = time.time() - start_time
+
+    if elapsed_time >= 1.0:
+        fps = frames / elapsed_time
+        start_time = time.time()
 
     plt.imshow(da)
     plt.savefig(f'C:/Users/jimen/OneDrive/Escritorio/AAU Classes/python/Project/Frames/frame_{t}.png')
-
-
 
 with imageio.get_writer('waveline10.gif', mode='I', loop=0) as writer:
     for i in range(len(ds.time)):
