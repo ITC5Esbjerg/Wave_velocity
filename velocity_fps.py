@@ -162,9 +162,16 @@ def findRegions(heights):
     return trace
 
 def vel(x,y,fps):
-    dx = [x[i + 1] - x[i] for i in range(len(x) - 1)]
-    dy = [y[i + 1] - y[i] for i in range(len(y) - 1)]
-    d = math.sqrt(sum((x**2 + y**2) for x, y in zip(dx, dy)))
+    #obtain average dx of highest points
+    dx = [abs(x[i + 1] - x[i]) for i in range(len(x) - 1)]
+    dx = sum(dx)/len(dx)
+
+    #obtain average dy of highest points
+    dy = [abs(y[i + 1] - y[i]) for i in range(len(y) - 1)]
+    dy = sum(dy)/len(dy)
+
+    #obtain average distance between highest points
+    d = math.sqrt(dx**2 + dy**2)
     velocity= fps*d
     return velocity 
 
@@ -195,7 +202,6 @@ def orthogonal(array,t, univ,fps):
                     for t in range(len(region)): #ads all positive numbers on the trace
                         if region[t]!="nan" and region[t]>0:
                             sum+=region[t]
-
 
                     sumangmax+=sum         
                     numb = numb + trace[j]
@@ -248,8 +254,7 @@ def orthogonal(array,t, univ,fps):
 
 frames = 0
 fps = 0
-start_time = time.time()
-veloci = 0
+st = time.time()
 velg = []
 
 #wave detection
@@ -286,13 +291,15 @@ for t in range(ds.dims['count']):
 
     velg.append(velocity) #list with all velocities
 
-    elapsed_time = time.time() - start_time
-    if elapsed_time >= 1.0:
-        fps = frames / elapsed_time
-        start_time = time.time()
-
     plt.imshow(da)
     plt.savefig(f'C:/Users/jimen/OneDrive/Escritorio/AAU Classes/python/Project/Frames/frame_{t}.png')
+
+    et = time.time() - st
+
+    if et >= 1.0:
+        fps = frames / et
+        st = time.time()
+        frames = 0
 
 with imageio.get_writer('waveline10.gif', mode='I', loop=0) as writer:
     for i in range(len(ds.time)):
