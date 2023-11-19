@@ -5,7 +5,7 @@ import numpy as np
 from skimage.draw import line
 from collections import Counter
 import math
-from time import process_time
+import time
 
 threshold=7
 learning_frames=25
@@ -193,7 +193,7 @@ def vel(x,y,n,t):
     #obtain distance that wave moved
     d = math.sqrt(sum((x**2 + y**2) for x, y in zip(dx, dy)))
     #divide by t for velocity
-    velocity= d/t
+    velocity= d/(t)
     return velocity 
 
 def orthogonal(array,t, univ,xg,yg):
@@ -286,6 +286,8 @@ k=0
 nwaves=0
 
 for t in range(ds.dims['count']):
+    #obtain time at beginning of frame
+    st = time.time()
     print(t)
     plt.gca().clear()
 
@@ -317,18 +319,19 @@ for t in range(ds.dims['count']):
     #vvy is list with al y coordinates
     vvx.extend(vx) 
     vvy.extend(vy)
+
     #k checks during how many frames waves have been detected
     k += tr 
+    
+    #obtain time elapsed between frames
+    et = time.time() - st
 
     if tr == 1:
-        #if a wave is detected start counting time
-        st = process_time()
         #after detecting waves for 2+ frames, calculate velocity
         if k > 2: 
-
             vvx = vvx[nwaves:]
             vvy = vvy[nwaves:]
-            velo = vel(vvx,vvy,nwave,st)
+            velo = vel(vvx,vvy,nwave,et)
             print('Current velocity: ', velo)
             velocity.append(velo)
 
